@@ -1,7 +1,6 @@
 package filter;
 
 import common.CommonAttribute;
-import common.RequestMapping;
 import common.RequestMapping.CreateQuestionRequest;
 import common.RequestMapping.LogoutRequest;
 import common.RequestMapping.SearchQuestionRequest;
@@ -191,7 +190,8 @@ public class AuthorizationFilter implements Filter {
             
             if (resource.endsWith(".css") 
                     || resource.endsWith(".js") 
-                    || resource.endsWith(".map")) {
+                    || resource.endsWith(".map")
+                    || resource.endsWith(".svg")) {
                 chain.doFilter(request, response);
                 return;
             }

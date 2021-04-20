@@ -2,9 +2,19 @@ package common;
 
 /**
  *
- * @author PC
+ * @author andtpse62827
  */
 public class RequestParam {
+    // Pagination
+    public static final String OFFSET = "off";
+    public static final String LENGTH = "len";
+    public static final String PAGE = "page";
+    
+    // Search parameter
+    public static final String KEYWORD = "keyword";
+    public static final String SUBJECT = "subject";
+    public static final String STATUS = "status";
+    
     public static class UserParam {
         public static final String EMAIL = "email";
         public static final String PASSWORD = "password";

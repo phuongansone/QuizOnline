@@ -1,11 +1,18 @@
 package dao;
 
+import common.RequestParam.QuestionParam;
+import common.RequestParam.SubjectParam;
 import dto.QuestionDTO;
+import dto.SubjectDTO;
+import dto.UserDTO;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import util.DatabaseUtil;
 
 /**
@@ -16,6 +23,48 @@ public class QuestionDAO {
     private static final String INSERT_QUESTION = "INSERT INTO question "
             + "(subject_id, question_content, is_active, create_by) "
             + "VALUES (?, ?, ?, ?)";
+    
+    private static final String GET_ALL_QUESTIONS = "SELECT question_id, "
+            + "subject_id, subject_name, "
+            + "question_content, question.is_active, "
+            + "create_at, create_by, update_at, update_by "
+            + "FROM question "
+            + "INNER JOIN subject USING (subject_id) "
+            + "ORDER BY question_content LIMIT ?, ?";
+    
+    private static final String COUNT_ALL_QUESTIONS = "SELECT count(*) FROM question";
+    
+    private static final String GET_QUESTIONS_BY_NAME = "SELECT question_id, subject_id, "
+            + "subject_name, question_content, question.is_active, "
+            + "create_at, create_by, update_at, update_by "
+            + "FROM question INNER JOIN subject USING (subject_id) "
+            + "WHERE question_content LIKE ? "
+            + "ORDER BY question_content LIMIT ?, ?";
+    
+    private static final String COUNT_QUESTIONS_BY_NAME = "SELECT count(*) "
+            + "FROM question WHERE question_content LIKE ?";
+    
+    private static final String GET_QUESTIONS_BY_STATUS = "SELECT question_id, subject_id, "
+            + "subject_name, question_content, question.is_active, "
+            + "create_at, create_by, update_at, update_by "
+            + "FROM question "
+            + "INNER JOIN subject USING (subject_id) "
+            + "WHERE question.is_active = ? "
+            + "ORDER BY question_content LIMIT ?, ?";
+    
+    private static final String COUNT_QUESTIONS_BY_STATUS = "SELECT count(*) "
+            + "FROM question WHERE question.is_active = ?";
+    
+    private static final String GET_QUESTIONS_BY_SUBJECT = "SELECT question_id, subject_id, "
+            + "subject_name, question_content, question.is_active, "
+            + "create_at, create_by, update_at, update_by "
+            + "FROM question "
+            + "INNER JOIN subject USING (subject_id) "
+            + "WHERE question.subject_id = ? "
+            + "ORDER BY question_content LIMIT ?, ?";
+    
+    private static final String COUNT_QUESTION_BY_SUBJECT = "SELECT count(*) "
+            + "FROM question WHERE question.subject_id = ?";
     
     public int insertQuestion(QuestionDTO question) 
             throws SQLException, ClassNotFoundException {
@@ -48,5 +97,263 @@ public class QuestionDAO {
         }
         
         return insertedId;
+    }
+    
+    public List<QuestionDTO> getAllQuestions(int off, int len) 
+            throws SQLException, ClassNotFoundException {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        List<QuestionDTO> questions = new ArrayList<>();
+        
+        try {
+            conn = DatabaseUtil.makeConnection();
+            
+            if (conn != null) {
+                ps = conn.prepareStatement(GET_ALL_QUESTIONS);
+                
+                ps.setInt(1, off);
+                ps.setInt(2, len);
+                
+                rs = ps.executeQuery();
+                
+                while(rs.next()) {
+                    questions.add(mapResultSetToQuestionDTO(rs));
+                }
+            }
+        } finally {
+            DatabaseUtil.closeConnection(conn, ps, rs);
+        }
+        
+        return questions;
+    }
+    
+    public int countAllQuestions() throws SQLException, ClassNotFoundException {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        int noOfQuestion = 0;
+        
+        try {
+            conn = DatabaseUtil.makeConnection();
+            
+            if (conn != null) {
+                ps = conn.prepareStatement(COUNT_ALL_QUESTIONS);
+                
+                rs = ps.executeQuery();
+                
+                if (rs.next()) {
+                    noOfQuestion = rs.getInt(1);
+                }
+            }
+        } finally {
+            DatabaseUtil.closeConnection(conn, ps, rs);
+        }
+        
+        return noOfQuestion;
+    }
+    
+    public List<QuestionDTO> getQuestionsByName(String keyword, int off, int len) 
+            throws SQLException, ClassNotFoundException {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        List<QuestionDTO> questions = new ArrayList<>();
+        
+        try {
+            conn = DatabaseUtil.makeConnection();
+            
+            if (conn != null) {
+                ps = conn.prepareStatement(GET_QUESTIONS_BY_NAME);
+                
+                ps.setString(1, "%" + keyword + "%");
+                ps.setInt(2, off);
+                ps.setInt(3, len);
+                
+                rs = ps.executeQuery();
+                
+                while(rs.next()) {
+                    questions.add(mapResultSetToQuestionDTO(rs));
+                }
+            }
+        } finally {
+            DatabaseUtil.closeConnection(conn, ps, rs);
+        }
+        
+        return questions;
+    }
+    
+    public int countQuestionsByName(String keyword) 
+            throws SQLException, ClassNotFoundException {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        int noOfQuestion = 0;
+        
+        try {
+            conn = DatabaseUtil.makeConnection();
+            
+            if (conn != null) {
+                ps = conn.prepareStatement(COUNT_QUESTIONS_BY_NAME);
+                
+                ps.setString(1, "%" + keyword + "%");
+                
+                rs = ps.executeQuery();
+                
+                if (rs.next()) {
+                    noOfQuestion = rs.getInt(1);
+                }
+            }
+        } finally {
+            DatabaseUtil.closeConnection(conn, ps, rs);
+        }
+        
+        return noOfQuestion;
+    }
+    
+    public List<QuestionDTO> getQuestionsByStatus(boolean status, int off, int len) 
+            throws SQLException, ClassNotFoundException {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        List<QuestionDTO> questions = new ArrayList<>();
+        
+        try {
+            conn = DatabaseUtil.makeConnection();
+            
+            if (conn != null) {
+                ps = conn.prepareStatement(GET_QUESTIONS_BY_STATUS);
+                
+                ps.setBoolean(1, status);
+                ps.setInt(2, off);
+                ps.setInt(3, len);
+                
+                rs = ps.executeQuery();
+                
+                while(rs.next()) {
+                    questions.add(mapResultSetToQuestionDTO(rs));
+                }
+            }
+        } finally {
+            DatabaseUtil.closeConnection(conn, ps, rs);
+        }
+        
+        return questions;
+    }
+    
+    public int countQuestionsByStatus(boolean status) 
+            throws SQLException, ClassNotFoundException {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        int noOfQuestion = 0;
+        
+        try {
+            conn = DatabaseUtil.makeConnection();
+            
+            if (conn != null) {
+                ps = conn.prepareStatement(COUNT_QUESTIONS_BY_STATUS);
+                
+                ps.setBoolean(1, status);
+                
+                rs = ps.executeQuery();
+                
+                if (rs.next()) {
+                    noOfQuestion = rs.getInt(1);
+                }
+            }
+        } finally {
+            DatabaseUtil.closeConnection(conn, ps, rs);
+        }
+        
+        return noOfQuestion;
+    }
+    
+    public List<QuestionDTO> getQuestionBySubject(int subjectId, int off, int len) 
+            throws SQLException, ClassNotFoundException {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        List<QuestionDTO> questions = new ArrayList<>();
+        
+        try {
+            conn = DatabaseUtil.makeConnection();
+            
+            if (conn != null) {
+                ps = conn.prepareStatement(GET_QUESTIONS_BY_SUBJECT);
+                
+                ps.setInt(1, subjectId);
+                ps.setInt(2, off);
+                ps.setInt(3, len);
+                
+                rs = ps.executeQuery();
+                
+                while(rs.next()) {
+                    questions.add(mapResultSetToQuestionDTO(rs));
+                }
+            }
+        } finally {
+            DatabaseUtil.closeConnection(conn, ps, rs);
+        }
+        
+        return questions;
+    }
+    
+    public int countQuestionsBySubject(int subjectId) 
+            throws SQLException, ClassNotFoundException {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        int noOfQuestion = 0;
+        
+        try {
+            conn = DatabaseUtil.makeConnection();
+            
+            if (conn != null) {
+                ps = conn.prepareStatement(COUNT_QUESTION_BY_SUBJECT);
+                
+                ps.setInt(1, subjectId);
+                
+                rs = ps.executeQuery();
+                
+                if (rs.next()) {
+                    noOfQuestion = rs.getInt(1);
+                }
+            }
+        } finally {
+            DatabaseUtil.closeConnection(conn, ps, rs);
+        }
+        
+        return noOfQuestion;
+    }
+    
+    private QuestionDTO mapResultSetToQuestionDTO(ResultSet rs) 
+            throws SQLException {
+        int subjectId = rs.getInt(SubjectParam.SUBJECT_ID);
+        String subjectName = rs.getString(SubjectParam.SUBJECT_NAME);
+        SubjectDTO subject = new SubjectDTO(subjectId, subjectName);
+        
+        int questionId = rs.getInt(QuestionParam.QUESTION_ID);
+        String questionContent = rs.getString(QuestionParam.QUESTION_CONTENT);
+        boolean isActive = rs.getBoolean(QuestionParam.IS_ACTIVE);
+        
+        Date createAt = rs.getDate(QuestionParam.CREATE_AT);
+        UserDTO createBy = new UserDTO();
+        createBy.setEmail(rs.getString(QuestionParam.CREATE_BY));
+        
+        Date updateAt = rs.getDate(QuestionParam.UPDATE_AT);
+        UserDTO updateBy = new UserDTO();
+        updateBy.setEmail(rs.getString(QuestionParam.UPDATE_BY));
+        
+        return new QuestionDTO(questionId, subject, questionContent, isActive, 
+                createAt, updateAt, createBy, updateBy);
     }
 }

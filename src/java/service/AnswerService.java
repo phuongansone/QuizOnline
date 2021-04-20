@@ -34,6 +34,11 @@ public class AnswerService {
         }
     }
     
+    public List<AnswerDTO> getAnswersByQuestionId(int questionId) 
+            throws SQLException, ClassNotFoundException {
+        return answerDAO.getAnswersByQuestionId(questionId);
+    }
+    
     private List<AnswerDTO> mapRequestToListAnswer(HttpServletRequest request, 
             int questionId) {
         List<AnswerDTO> answers = new ArrayList<>();

@@ -181,7 +181,8 @@ public class AuthenticationFilter implements Filter {
 
             if (resource.endsWith(".css") 
                     || resource.endsWith(".js") 
-                    || resource.endsWith(".map")) {
+                    || resource.endsWith(".map")
+                    || resource.endsWith(".svg")) {
                 chain.doFilter(request, response);
                 return;
             }

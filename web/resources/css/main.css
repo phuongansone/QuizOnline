@@ -5,3 +5,11 @@ body {
 .page-content {
     padding-top: 1rem;
 }
+
+.answer-li {
+    list-style-type: none;
+}
+
+.width-100px {
+    width: 100px;
+}

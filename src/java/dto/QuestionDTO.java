@@ -2,6 +2,8 @@ package dto;
 
 import java.io.Serializable;
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -16,16 +18,20 @@ public class QuestionDTO implements Serializable {
     private Date updateAt;
     private UserDTO createBy;
     private UserDTO updateBy;
+    private List<AnswerDTO> answers;
 
     public QuestionDTO() {
+        this.answers = new ArrayList();
     }
     
     public QuestionDTO(int questionId) {
+        this.answers = new ArrayList();
         this.questionId = questionId;
     }
 
     public QuestionDTO(int questionId, SubjectDTO subject, String questionContent, 
             boolean isActive, Date createAt, Date updateAt, UserDTO createBy, UserDTO updateBy) {
+        this.answers = new ArrayList();
         this.questionId = questionId;
         this.subject = subject;
         this.questionContent = questionContent;
@@ -38,6 +44,7 @@ public class QuestionDTO implements Serializable {
 
     public QuestionDTO(SubjectDTO subject, String questionContent, boolean isActive, 
             UserDTO createBy, UserDTO updateBy) {
+        this.answers = new ArrayList();
         this.subject = subject;
         this.questionContent = questionContent;
         this.isActive = isActive;
@@ -109,4 +116,11 @@ public class QuestionDTO implements Serializable {
         this.updateBy = updateBy;
     }
     
+    public List<AnswerDTO> getAnswers() {
+        return answers;
+    }
+
+    public void setAnswers(List<AnswerDTO> answers) {
+        this.answers = answers;
+    }
 }

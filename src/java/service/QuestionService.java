@@ -3,10 +3,12 @@ package service;
 import common.CommonAttribute;
 import common.RequestParam.QuestionParam;
 import dao.QuestionDAO;
+import dto.AnswerDTO;
 import dto.QuestionDTO;
 import dto.SubjectDTO;
 import dto.UserDTO;
 import java.sql.SQLException;
+import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import util.StringUtil;
@@ -35,6 +37,77 @@ public class QuestionService {
         return questionDAO.insertQuestion(mapRequestToQuestionDTO(request));
     }
     
+    public List<QuestionDTO> getAllQuestions(int off, int len) 
+            throws SQLException, ClassNotFoundException {
+        List<QuestionDTO> questions = questionDAO.getAllQuestions(off, len);
+        
+        for (QuestionDTO question : questions) {
+            List<AnswerDTO> answers = answerService
+                    .getAnswersByQuestionId(question.getQuestionId());
+            question.setAnswers(answers);
+        }
+        
+        return questions;
+    }
+    
+    public int countAllQuestions() throws SQLException, ClassNotFoundException {
+        return questionDAO.countAllQuestions();
+    }
+    
+    public List<QuestionDTO> getQuestionsByName(String keyword, int off, int len) 
+            throws SQLException, ClassNotFoundException {
+        List<QuestionDTO> questions = questionDAO.getQuestionsByName(keyword, off, len);
+        
+        for (QuestionDTO question : questions) {
+            List<AnswerDTO> answers = answerService
+                    .getAnswersByQuestionId(question.getQuestionId());
+            question.setAnswers(answers);
+        }
+        
+        return questions; 
+    }
+    
+    public int countQuestionsByName(String keyword) 
+            throws SQLException, ClassNotFoundException {
+        return questionDAO.countQuestionsByName(keyword);
+    }
+    
+    public List<QuestionDTO> getQuestionsByStatus(boolean status, int off, int len) 
+            throws SQLException, ClassNotFoundException {
+        List<QuestionDTO> questions = questionDAO.getQuestionsByStatus(status, off, len);
+        
+        for (QuestionDTO question : questions) {
+            List<AnswerDTO> answers = answerService
+                    .getAnswersByQuestionId(question.getQuestionId());
+            question.setAnswers(answers);
+        }
+        
+        return questions;
+    }
+    
+    public int countQuestionsByStatus(boolean status) 
+            throws SQLException, ClassNotFoundException {
+        return questionDAO.countQuestionsByStatus(status);
+    }
+    
+    public List<QuestionDTO> getQuestionBySubject(int subjectId, int off, int len) 
+            throws SQLException, ClassNotFoundException {
+        List<QuestionDTO> questions = questionDAO.getQuestionBySubject(subjectId, off, len);
+        
+        for (QuestionDTO question : questions) {
+            List<AnswerDTO> answers = answerService
+                    .getAnswersByQuestionId(question.getQuestionId());
+            question.setAnswers(answers);
+        }
+        
+        return questions;
+    }
+    
+    public int countQuestionsBySubject(int subjectId) 
+            throws SQLException, ClassNotFoundException {
+        return questionDAO.countQuestionsBySubject(subjectId);
+    }
+    
     private QuestionDTO mapRequestToQuestionDTO(HttpServletRequest request) {
         HttpSession session = request.getSession();
         UserDTO user = (UserDTO) session.getAttribute(CommonAttribute.USER);
@@ -47,4 +120,6 @@ public class QuestionService {
         
         return new QuestionDTO(subject, questionContent, Boolean.TRUE, user, null);
     }
+    
+    
 }

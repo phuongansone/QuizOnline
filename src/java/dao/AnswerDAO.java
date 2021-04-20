@@ -1,11 +1,16 @@
 package dao;
 
+import common.RequestParam;
+import common.RequestParam.AnswerParam;
 import dto.AnswerDTO;
+import dto.QuestionDTO;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import util.DatabaseUtil;
 
 /**
@@ -16,6 +21,9 @@ public class AnswerDAO {
     private static final String INSERT_ANSWER = "INSERT INTO answer "
             + "(question_id, answer_content, is_correct) "
             + "VALUES (?, ?, ?)";
+    
+    private static final String GET_ANSWER_BY_QUESTION_ID = "SELECT answer_id, question_id, "
+            + "answer_content, is_correct FROM answer WHERE question_id = ?";
     
     public int insertAnswer(AnswerDTO answer) 
             throws SQLException, ClassNotFoundException {
@@ -48,5 +56,44 @@ public class AnswerDAO {
         }
         
         return insertedId;
+    }
+    
+    public List<AnswerDTO> getAnswersByQuestionId(int questionId) 
+            throws SQLException, ClassNotFoundException {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        List<AnswerDTO> answers = new ArrayList<>();
+        
+        try {
+            conn = DatabaseUtil.makeConnection();
+            if (conn != null) {
+                ps = conn.prepareStatement(GET_ANSWER_BY_QUESTION_ID);
+                ps.setInt(1, questionId);
+                
+                rs = ps.executeQuery();
+                
+                while (rs.next()) {
+                    answers.add(mapResultSetToAnswerDTO(rs));
+                }
+            }
+        } finally {
+            DatabaseUtil.closeConnection(conn, ps, rs);
+        }
+        
+        return answers;
+    }
+    
+    private AnswerDTO mapResultSetToAnswerDTO(ResultSet rs) throws SQLException {
+        int answerId = rs.getInt(AnswerParam.ANSWER_ID);
+        
+        int questionId = rs.getInt(AnswerParam.QUESTION_ID);
+        QuestionDTO question = new QuestionDTO(questionId);
+        
+        String answerContent = rs.getString(AnswerParam.ANSWER_CONTENT);
+        boolean isCorrect = rs.getBoolean(AnswerParam.IS_CORRECT);
+        
+        return new AnswerDTO(answerId, question, answerContent, isCorrect, null, null);
     }
 }
