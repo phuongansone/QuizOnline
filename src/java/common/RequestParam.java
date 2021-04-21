@@ -15,6 +15,9 @@ public class RequestParam {
     public static final String SUBJECT = "subject";
     public static final String STATUS = "status";
     
+    public static final String CURRENT = "current";
+    public static final String INDEX = "index";
+    
     public static class UserParam {
         public static final String EMAIL = "email";
         public static final String PASSWORD = "password";
@@ -68,5 +71,23 @@ public class RequestParam {
         public static final String ANSWER_CONTENT4 = "answer_content4";
     }
     
+    public static final class QuizMetaParam {
+        public static final String QUIZ_META_ID = "quiz_meta_id";
+        public static final String SUBJECT_ID = "subject_id";
+        public static final String SUBJECT_NAME = "subject_name";
+        public static final String TITLE = "title";
+        public static final String IS_ACTIVE = "is_active";
+        public static final String QUESTION_NO = "question_no";
+        public static final String DURATION = "duration";
+    }
     
+    public static final class QuizParam {
+        public static final String QUIZ_ID = "quiz_id";
+        public static final String EMAIL = "email";
+        public static final String SCORE = "score";
+        public static final String IS_ACTIVE = "is_active";
+        public static final String CREATE_AT = "create_at";
+        public static final String UPDATE_AT = "update_at";
+        public static final String QUIZ_META_ID = "quiz_meta_id";
+    }
 }

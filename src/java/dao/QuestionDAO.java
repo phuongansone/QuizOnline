@@ -83,6 +83,13 @@ public class QuestionDAO {
     private static final String UPDATE_QUESTION_STATUS = "UPDATE question "
             + "SET is_active = ? WHERE question_id = ?";
     
+    private static final String GET_RANDOM_QUESTIONS = "SELECT question_id, subject_id, "
+            + "subject_name, question_content, question.is_active, "
+            + "create_at, create_by, update_at, update_by "
+            + "FROM question "
+            + "INNER JOIN subject USING (subject_id) "
+            + "WHERE question.subject_id = ? ORDER BY RAND() LIMIT ?";
+    
     public int insertQuestion(QuestionDTO question) 
             throws SQLException, ClassNotFoundException {
         Connection conn = null;
@@ -431,6 +438,35 @@ public class QuestionDAO {
         }
         
         return updated;
+    }
+    
+    public List<QuestionDTO> getRandomQuestion(int subjectId, int noOfQuestion) 
+            throws SQLException, ClassNotFoundException {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        List<QuestionDTO> questions = new ArrayList<>();
+        
+        try {
+            conn = DatabaseUtil.makeConnection();
+            
+            if (conn != null) {
+                ps = conn.prepareStatement(GET_RANDOM_QUESTIONS);
+                ps.setInt(1, subjectId);
+                ps.setInt(2, noOfQuestion);
+                
+                rs = ps.executeQuery();
+                
+                while(rs.next()) {
+                    questions.add(mapResultSetToQuestionDTO(rs));
+                }
+            }
+        } finally {
+            DatabaseUtil.closeConnection(conn, ps, rs);
+        }
+        
+        return questions;
     }
     
     private QuestionDTO mapResultSetToQuestionDTO(ResultSet rs) 

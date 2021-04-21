@@ -2,7 +2,7 @@ package common;
 
 /**
  *
- * @author PC
+ * @author andtpse62827
  */
 public class RequestMapping {
     
@@ -63,6 +63,34 @@ public class RequestMapping {
         public static final String ACTION = "deleteQuestion";
         public static final String VIEW = "/WEB-INF/pages/edit-question.jsp";
         private DeleteQuestionRequest() {
+        }
+    }
+    
+    public static class SubjectListRequest {
+        public static final String ACTION = "subjectList";
+        public static final String VIEW = "/WEB-INF/pages/subject-list.jsp";
+        private SubjectListRequest() {
+        }
+    }
+    
+    public static class QuizMetaRequest {
+        public static final String ACTION = "quizMetaList";
+        public static final String VIEW = "/WEB-INF/pages/quiz-meta-list.jsp";
+        private QuizMetaRequest() {
+        }
+    }
+    
+    public static class QuizQuestionRequest {
+        public static final String ACTION = "quizQuestion";
+        public static final String VIEW = "/WEB-INF/pages/quiz-question.jsp";
+        private QuizQuestionRequest() {
+        }
+    }
+    
+    public static class FinishQuizRequest {
+        public static final String ACTION = "finishQuiz";
+        public static final String VIEW = "/WEB-INF/pages/finish-quiz.jsp";
+        private FinishQuizRequest() {
         }
     }
 }

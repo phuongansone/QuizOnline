@@ -9,9 +9,23 @@ public class CommonAttribute {
     
     public static final String SUBJECTS = "SUBJECTS";
     
+    public static final String QUIZ_METAS = "QUIZ_METAS";
+    
+    public static final String QUIZ = "QUIZ";
+    
     public static final String QUESTION = "QUESTION";
     
     public static final String QUESTIONS = "QUESTIONS";
+    
+    public static final String QUIZ_QUESTIONS = "QUIZ_QUESTIONS";
+    
+    public static final String QUESTION_NO = "QUESTION_NO";
+    
+    public static final String CURRENT_QUESTION = "CURRENT_QUESTION";
+    
+    public static final String CORRECT_ANS_NO = "CORRECT_ANS_NO";
+    
+    public static final String SCORE = "SCORE";
     
     // Notification
     public static final String REGISTERED = "REGISTERED";

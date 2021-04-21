@@ -3,7 +3,7 @@ package servlet;
 import common.CommonAttribute;
 import common.RequestMapping.LoginRequest;
 import common.RequestMapping.SearchQuestionRequest;
-import common.RequestMapping.TakeQuizRequest;
+import common.RequestMapping.SubjectListRequest;
 import dto.UserDTO;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -85,7 +85,7 @@ public class LoginServlet extends HttpServlet {
                 response.sendRedirect(SearchQuestionRequest.ACTION);
                 
             } else {
-                response.sendRedirect(TakeQuizRequest.ACTION);
+                response.sendRedirect(SubjectListRequest.ACTION);
             }
             return;
         }

@@ -4,8 +4,12 @@ import common.CommonAttribute;
 import common.RequestMapping.CreateQuestionRequest;
 import common.RequestMapping.DeleteQuestionRequest;
 import common.RequestMapping.EditQuestionRequest;
+import common.RequestMapping.FinishQuizRequest;
 import common.RequestMapping.LogoutRequest;
+import common.RequestMapping.QuizMetaRequest;
+import common.RequestMapping.QuizQuestionRequest;
 import common.RequestMapping.SearchQuestionRequest;
+import common.RequestMapping.SubjectListRequest;
 import common.RequestMapping.TakeQuizRequest;
 import dto.UserDTO;
 import java.io.IOException;
@@ -57,7 +61,11 @@ public class AuthorizationFilter implements Filter {
         ADMIN_PERMISSION.add(DeleteQuestionRequest.ACTION);
         ADMIN_PERMISSION.add("");
         
+        STUDENT_PERMISSION.add(SubjectListRequest.ACTION);
+        STUDENT_PERMISSION.add(QuizMetaRequest.ACTION);
         STUDENT_PERMISSION.add(TakeQuizRequest.ACTION);
+        STUDENT_PERMISSION.add(QuizQuestionRequest.ACTION);
+        STUDENT_PERMISSION.add(FinishQuizRequest.ACTION);
         STUDENT_PERMISSION.add(LogoutRequest.ACTION);
         STUDENT_PERMISSION.add("");
     }    
@@ -208,7 +216,7 @@ public class AuthorizationFilter implements Filter {
                 authorized = false;
             }
             
-            // if user is not authorized, send NOT FOUND
+            // if user is not authorized, send NOT FOUND error
             if (!authorized) {
                 res.sendError(HttpServletResponse.SC_NOT_FOUND);
                 return;

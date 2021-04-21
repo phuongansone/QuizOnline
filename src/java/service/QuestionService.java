@@ -135,6 +135,20 @@ public class QuestionService {
         return question;
     }
     
+    public List<QuestionDTO> getRandomQuestion(int subjectId, int noOfQuestion) 
+            throws SQLException, ClassNotFoundException {
+        List<QuestionDTO> questions = questionDAO
+                .getRandomQuestion(subjectId, noOfQuestion);
+        
+        for (QuestionDTO question : questions) {
+            List<AnswerDTO> answers = answerService
+                    .getAnswersByQuestionId(question.getQuestionId());
+            question.setAnswers(answers);
+        }
+        
+        return questions;
+    }
+    
     public boolean deleteQuestionById(HttpServletRequest request) 
             throws ClassNotFoundException, SQLException {
         int questionId = StringUtil.parseInt(

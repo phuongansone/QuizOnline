@@ -180,9 +180,8 @@ public class DispatcherFilter implements Filter {
                 
                 if (user.isAdmin()) {
                     res.sendRedirect(RequestMapping.SearchQuestionRequest.ACTION);
-
                 } else {
-                    res.sendRedirect(RequestMapping.TakeQuizRequest.ACTION);
+                    res.sendRedirect(RequestMapping.SubjectListRequest.ACTION);
                 }
                 return;
             }

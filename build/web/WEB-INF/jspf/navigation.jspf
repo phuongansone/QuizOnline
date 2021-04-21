@@ -37,7 +37,7 @@
 
                     <c:when test="${user.role.roleId == Role.STUDENT.roleId}">
                         <li class="nav-item">
-                            <a class="nav-link" href="takeQuiz">Take quiz</a>
+                            <a class="nav-link" href="subjectList">Take quiz</a>
                         </li>
                     </c:when>
                 </c:choose>    

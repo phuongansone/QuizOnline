@@ -1,12 +1,26 @@
 package servlet;
 
-import common.RequestMapping;
-import common.RequestMapping.TakeQuizRequest;
+import common.CommonAttribute;
+import common.RequestMapping.QuizQuestionRequest;
+import common.RequestParam.QuizMetaParam;
+import dto.QuestionDTO;
+import dto.QuizDTO;
+import dto.QuizQuestionDTO;
 import java.io.IOException;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import service.QuestionService;
+import service.QuizQuestionService;
+import service.QuizService;
+import util.StringUtil;
 
 /**
  *
@@ -40,8 +54,42 @@ public class TakeQuizServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
-        request.getRequestDispatcher(TakeQuizRequest.VIEW)
-                .forward(request, response);
+        
+        HttpSession session = request.getSession();
+        
+        int subjectId = StringUtil.parseInt(
+                request.getParameter(QuizMetaParam.SUBJECT_ID), -1);
+        int noOfQuestion = StringUtil.parseInt(
+                request.getParameter(QuizMetaParam.QUESTION_NO), 0);
+        
+        QuestionService questionService = new QuestionService();
+        List<QuestionDTO> questions = new ArrayList<>();
+        
+        QuizService quizService = new QuizService();
+        QuizDTO quiz = null;
+        
+        QuizQuestionService quizQuestionService = new QuizQuestionService();
+        List<QuizQuestionDTO> quizQuestion = null;
+        
+        try {
+            questions = questionService
+                    .getRandomQuestion(subjectId, noOfQuestion);
+            
+            int quizId = quizService.insertQuiz(request);
+            quiz = quizService.getQuizById(quizId);
+            
+            quizQuestion = quizQuestionService
+                    .generateQuizQuestionDTO(questions, quiz);
+        } catch (SQLException | ClassNotFoundException ex) {
+            Logger.getLogger(TakeQuizServlet.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        session.setAttribute(CommonAttribute.QUESTIONS, questions);
+        session.setAttribute(CommonAttribute.QUIZ, quiz);
+        session.setAttribute(CommonAttribute.QUIZ_QUESTIONS, quizQuestion);
+        session.setAttribute(CommonAttribute.QUESTION_NO, noOfQuestion);
+        
+        response.sendRedirect(QuizQuestionRequest.ACTION);
     }
 
     /**
@@ -67,5 +115,4 @@ public class TakeQuizServlet extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }
-
 }

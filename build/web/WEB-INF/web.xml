@@ -56,6 +56,22 @@
         <servlet-name>DeleteQuestionServlet</servlet-name>
         <servlet-class>servlet.DeleteQuestionServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>SubjectListServlet</servlet-name>
+        <servlet-class>servlet.SubjectListServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>QuizMetaListServlet</servlet-name>
+        <servlet-class>servlet.QuizMetaListServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>QuizQuestionServlet</servlet-name>
+        <servlet-class>servlet.QuizQuestionServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>FinishQuizServlet</servlet-name>
+        <servlet-class>servlet.FinishQuizServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>LoginServlet</servlet-name>
         <url-pattern>/LoginServlet</url-pattern>
@@ -91,5 +107,21 @@
     <servlet-mapping>
         <servlet-name>DeleteQuestionServlet</servlet-name>
         <url-pattern>/DeleteQuestionServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SubjectListServlet</servlet-name>
+        <url-pattern>/SubjectListServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>QuizMetaListServlet</servlet-name>
+        <url-pattern>/QuizMetaListServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>QuizQuestionServlet</servlet-name>
+        <url-pattern>/QuizQuestionServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>FinishQuizServlet</servlet-name>
+        <url-pattern>/FinishQuizServlet</url-pattern>
     </servlet-mapping>
 </web-app>
