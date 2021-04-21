@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
+import util.StringUtil;
 
 /**
  *
@@ -31,6 +32,15 @@ public class AnswerService {
         
         for (AnswerDTO answer : answers) {
             answerDAO.insertAnswer(answer);
+        }
+    }
+    
+    public void updateAnswer(HttpServletRequest request, int questionId) 
+            throws SQLException, ClassNotFoundException {
+        List<AnswerDTO> answers = mapRequestToListAnswer(request, questionId);
+        
+        for (AnswerDTO answer : answers) {
+            answerDAO.updateAnswer(answer);
         }
     }
     
@@ -70,6 +80,21 @@ public class AnswerService {
             case "4":
                 answer4.setIsCorrect(Boolean.TRUE);
                 break;
+        }
+        
+        if (request.getParameter(AnswerParam.ANSWER_ID1) != null) {
+            // dto for updating
+            int answerId1 = StringUtil.parseInt(request.getParameter(AnswerParam.ANSWER_ID1), -1);
+            answer1.setAnswerId(answerId1);
+            
+            int answerId2 = StringUtil.parseInt(request.getParameter(AnswerParam.ANSWER_ID2), -1);
+            answer2.setAnswerId(answerId2);
+            
+            int answerId3 = StringUtil.parseInt(request.getParameter(AnswerParam.ANSWER_ID3), -1);
+            answer3.setAnswerId(answerId3);
+            
+            int answerId4 = StringUtil.parseInt(request.getParameter(AnswerParam.ANSWER_ID4), -1);
+            answer4.setAnswerId(answerId4);
         }
         
         answers.add(answer1);

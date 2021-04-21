@@ -1,6 +1,5 @@
 package dao;
 
-import common.RequestParam;
 import common.RequestParam.AnswerParam;
 import dto.AnswerDTO;
 import dto.QuestionDTO;
@@ -24,6 +23,10 @@ public class AnswerDAO {
     
     private static final String GET_ANSWER_BY_QUESTION_ID = "SELECT answer_id, question_id, "
             + "answer_content, is_correct FROM answer WHERE question_id = ?";
+    
+    private static final String UPDATE_ANSWER = "UPDATE answer "
+            + "SET answer_content = ?, is_correct = ? "
+            + "WHERE answer_id = ? AND question_id = ?";
     
     public int insertAnswer(AnswerDTO answer) 
             throws SQLException, ClassNotFoundException {
@@ -83,6 +86,34 @@ public class AnswerDAO {
         }
         
         return answers;
+    }
+    
+    public boolean updateAnswer(AnswerDTO answer) 
+            throws SQLException, ClassNotFoundException {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        boolean updated = false;
+        
+        try {
+            conn = DatabaseUtil.makeConnection();
+            
+            if (conn != null) {
+                ps = conn.prepareStatement(UPDATE_ANSWER);
+                
+                ps.setString(1, answer.getAnswerContent());
+                ps.setBoolean(2, answer.isIsCorrect());
+                ps.setInt(3, answer.getAnswerId());
+                ps.setInt(4, answer.getQuestion().getQuestionId());
+                
+                updated = ps.executeUpdate() > 0;
+            }
+        } finally {
+            DatabaseUtil.closeConnection(conn, ps, rs);
+        }
+        
+        return updated;
     }
     
     private AnswerDTO mapResultSetToAnswerDTO(ResultSet rs) throws SQLException {

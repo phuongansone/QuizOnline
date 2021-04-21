@@ -76,7 +76,7 @@
                     <div class="card-body">
                         <h6 class="card-title">${question.questionContent}</h6>
                     </div>
-                    <div class="card-text">
+                    <div class="card-text mr-3">
                         <ul>
                             <c:forEach items="${question.answers}" var="answer">
                                 <li class="list-group-item ${answer.isCorrect == true ? 'list-group-item-success' : ''}">
@@ -84,6 +84,12 @@
                                 </li>
                             </c:forEach>
                         </ul>
+                    </div>
+                    <div class="card-text d-flex justify-content-end mr-3">
+                        <a class="btn btn-outline-primary mb-2" 
+                           href="editQuestion?question_id=${question.questionId}" >
+                            View Detail
+                        </a>
                     </div>
                 </div>
             </c:forEach>

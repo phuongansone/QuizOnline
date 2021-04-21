@@ -51,4 +51,18 @@ public class RequestMapping {
         private CreateQuestionRequest() {
         }
     }
+    
+    public static class EditQuestionRequest {
+        public static final String ACTION = "editQuestion";
+        public static final String VIEW = "/WEB-INF/pages/edit-question.jsp";
+        private EditQuestionRequest() {
+        }
+    }
+    
+    public static class DeleteQuestionRequest {
+        public static final String ACTION = "deleteQuestion";
+        public static final String VIEW = "/WEB-INF/pages/edit-question.jsp";
+        private DeleteQuestionRequest() {
+        }
+    }
 }

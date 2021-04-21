@@ -2,6 +2,8 @@ package filter;
 
 import common.CommonAttribute;
 import common.RequestMapping.CreateQuestionRequest;
+import common.RequestMapping.DeleteQuestionRequest;
+import common.RequestMapping.EditQuestionRequest;
 import common.RequestMapping.LogoutRequest;
 import common.RequestMapping.SearchQuestionRequest;
 import common.RequestMapping.TakeQuizRequest;
@@ -51,6 +53,8 @@ public class AuthorizationFilter implements Filter {
         ADMIN_PERMISSION.add(SearchQuestionRequest.ACTION);
         ADMIN_PERMISSION.add(LogoutRequest.ACTION);
         ADMIN_PERMISSION.add(CreateQuestionRequest.ACTION);
+        ADMIN_PERMISSION.add(EditQuestionRequest.ACTION);
+        ADMIN_PERMISSION.add(DeleteQuestionRequest.ACTION);
         ADMIN_PERMISSION.add("");
         
         STUDENT_PERMISSION.add(TakeQuizRequest.ACTION);

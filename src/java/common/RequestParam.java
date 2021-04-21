@@ -57,6 +57,11 @@ public class RequestParam {
         public static final String CREATE_AT = "create_at";
         public static final String UPDATE_AT = "update_at";
         
+        public static final String ANSWER_ID1 = "answer_id1";
+        public static final String ANSWER_ID2 = "answer_id2";
+        public static final String ANSWER_ID3 = "answer_id3";
+        public static final String ANSWER_ID4 = "answer_id4";
+        
         public static final String ANSWER_CONTENT1 = "answer_content1";
         public static final String ANSWER_CONTENT2 = "answer_content2";
         public static final String ANSWER_CONTENT3 = "answer_content3";

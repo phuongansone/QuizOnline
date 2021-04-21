@@ -66,6 +66,23 @@ public class QuestionDAO {
     private static final String COUNT_QUESTION_BY_SUBJECT = "SELECT count(*) "
             + "FROM question WHERE question.subject_id = ?";
     
+    private static final String GET_QUESTION_BY_ID = "SELECT question_id, subject_id, "
+            + "subject_name, question_content, question.is_active, "
+            + "create_at, create_by, update_at, update_by "
+            + "FROM question "
+            + "INNER JOIN subject USING (subject_id) "
+            + "WHERE question.question_id = ?";
+    
+    private static final String UPDATE_QUESTION_BY_ID = "UPDATE question "
+            + "SET subject_id = ?, "
+            + "question_content = ?, "
+            + "is_active = ?, "
+            + "update_by = ? "
+            + "WHERE question_id = ?";
+    
+    private static final String UPDATE_QUESTION_STATUS = "UPDATE question "
+            + "SET is_active = ? WHERE question_id = ?";
+    
     public int insertQuestion(QuestionDTO question) 
             throws SQLException, ClassNotFoundException {
         Connection conn = null;
@@ -333,6 +350,87 @@ public class QuestionDAO {
         }
         
         return noOfQuestion;
+    }
+    
+    public QuestionDTO getQuestionById(int questionId) 
+            throws SQLException, ClassNotFoundException {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        QuestionDTO question = null;
+        
+        try {
+            conn = DatabaseUtil.makeConnection();
+            
+            if (conn != null) {
+                ps = conn.prepareStatement(GET_QUESTION_BY_ID);
+                
+                ps.setInt(1, questionId);
+                
+                rs = ps.executeQuery();
+                
+                if (rs.next()) {
+                    question = mapResultSetToQuestionDTO(rs);
+                }
+            }
+        } finally {
+            DatabaseUtil.closeConnection(conn, ps, rs);
+        }
+        
+        return question;
+    }
+    
+    public boolean updateQuestionById(QuestionDTO question) 
+            throws ClassNotFoundException, SQLException {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        
+        boolean updated = false;
+        
+        try {
+            conn = DatabaseUtil.makeConnection();
+            
+            if (conn != null) {
+                ps = conn.prepareStatement(UPDATE_QUESTION_BY_ID);
+                
+                ps.setInt(1, question.getSubject().getSubjectId());
+                ps.setString(2, question.getQuestionContent());
+                ps.setBoolean(3, question.isIsActive());
+                ps.setString(4, question.getUpdateBy().getEmail());
+                ps.setInt(5, question.getQuestionId());
+                
+                updated = ps.executeUpdate() > 0;
+            }
+        } finally {
+            DatabaseUtil.closeConnection(conn, ps, null);
+        }
+        
+        return updated;
+    }
+    
+    public boolean updateQuestionStatus(int questionId, boolean status) 
+            throws ClassNotFoundException, SQLException {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        
+        boolean updated = false;
+        
+        try {
+            conn = DatabaseUtil.makeConnection();
+            
+            if (conn != null) {
+                ps = conn.prepareStatement(UPDATE_QUESTION_STATUS);
+                ps.setBoolean(1, status);
+                ps.setInt(2, questionId);
+                
+                updated = ps.executeUpdate() > 0;
+            }
+        } finally {
+            DatabaseUtil.closeConnection(conn, ps, null);
+        }
+        
+        return updated;
     }
     
     private QuestionDTO mapResultSetToQuestionDTO(ResultSet rs) 

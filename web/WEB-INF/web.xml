@@ -48,6 +48,14 @@
         <servlet-name>CreateQuestionServlet</servlet-name>
         <servlet-class>servlet.CreateQuestionServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>EditQuestionServlet</servlet-name>
+        <servlet-class>servlet.EditQuestionServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DeleteQuestionServlet</servlet-name>
+        <servlet-class>servlet.DeleteQuestionServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>LoginServlet</servlet-name>
         <url-pattern>/LoginServlet</url-pattern>
@@ -76,4 +84,12 @@
         <param-name>recordPerPage</param-name>
         <param-value>10</param-value>
     </context-param>
+    <servlet-mapping>
+        <servlet-name>EditQuestionServlet</servlet-name>
+        <url-pattern>/EditQuestionServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DeleteQuestionServlet</servlet-name>
+        <url-pattern>/DeleteQuestionServlet</url-pattern>
+    </servlet-mapping>
 </web-app>

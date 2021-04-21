@@ -18,6 +18,8 @@ import util.StringUtil;
  * @author andtpse62827
  */
 public class QuestionService {
+    private static final String FLAG_ON = "1";
+    
     private final QuestionDAO questionDAO;
     private final AnswerService answerService;
 
@@ -35,6 +37,21 @@ public class QuestionService {
     public int insertQuestion(HttpServletRequest request) 
             throws SQLException, ClassNotFoundException {
         return questionDAO.insertQuestion(mapRequestToQuestionDTO(request));
+    }
+    
+    public void updateQuestionAndAnswerById(HttpServletRequest request) 
+            throws ClassNotFoundException, SQLException {
+        int questionId = StringUtil.parseInt(
+                request.getParameter(QuestionParam.QUESTION_ID), -1);
+        
+        if (questionDAO.updateQuestionById(mapRequestToQuestionDTO(request))) {
+            answerService.updateAnswer(request, questionId);
+        }
+    }
+    
+    public boolean updateQuestionById(HttpServletRequest request) 
+            throws ClassNotFoundException, SQLException {
+        return questionDAO.updateQuestionById(mapRequestToQuestionDTO(request));
     }
     
     public List<QuestionDTO> getAllQuestions(int off, int len) 
@@ -108,9 +125,30 @@ public class QuestionService {
         return questionDAO.countQuestionsBySubject(subjectId);
     }
     
+    public QuestionDTO getQuestionById(int questionId) 
+            throws SQLException, ClassNotFoundException {
+        QuestionDTO question = questionDAO.getQuestionById(questionId);
+        List<AnswerDTO> answers = answerService
+                    .getAnswersByQuestionId(questionId);
+        question.setAnswers(answers);
+        
+        return question;
+    }
+    
+    public boolean deleteQuestionById(HttpServletRequest request) 
+            throws ClassNotFoundException, SQLException {
+        int questionId = StringUtil.parseInt(
+                request.getParameter(QuestionParam.QUESTION_ID), -1);
+        boolean status = Boolean.FALSE;
+        return questionDAO.updateQuestionStatus(questionId, status);
+    }
+    
     private QuestionDTO mapRequestToQuestionDTO(HttpServletRequest request) {
         HttpSession session = request.getSession();
         UserDTO user = (UserDTO) session.getAttribute(CommonAttribute.USER);
+        
+        int questionId = StringUtil.parseInt(
+                request.getParameter(QuestionParam.QUESTION_ID), -1);
         
         int subjectId = StringUtil.parseInt(
                 request.getParameter(QuestionParam.SUBJECT_ID), -1);
@@ -118,7 +156,21 @@ public class QuestionService {
         
         String questionContent = request.getParameter(QuestionParam.QUESTION_CONTENT);
         
-        return new QuestionDTO(subject, questionContent, Boolean.TRUE, user, null);
+        if (questionId == -1) {
+            // dto for inserting new question
+            return new QuestionDTO(subject, questionContent, Boolean.TRUE, user, null);
+        }
+        
+        // dto for updating existing question
+        boolean isActive = FLAG_ON.equals(request.getParameter(QuestionParam.IS_ACTIVE));
+        QuestionDTO question = new QuestionDTO();
+        question.setQuestionId(questionId);
+        question.setSubject(subject);
+        question.setQuestionContent(questionContent);
+        question.setIsActive(isActive);
+        question.setUpdateBy(user);
+        
+        return question;
     }
     
     
