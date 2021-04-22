@@ -5,19 +5,23 @@
  */
 package servlet;
 
-import static common.CommonAttribute.CORRECT_ANS_NO;
-import static common.CommonAttribute.QUIZ_QUESTIONS;
-import static common.CommonAttribute.SCORE;
+import common.CommonAttribute;
+import static common.CommonAttribute.ERROR;
 import common.RequestMapping.FinishQuizRequest;
+import dto.QuizDTO;
 import dto.QuizQuestionDTO;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import service.QuizQuestionService;
+import service.QuizService;
 
 /**
  *
@@ -51,16 +55,6 @@ public class FinishQuizServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
-        
-        HttpSession session = request.getSession();
-        List<QuizQuestionDTO> quizQuestions = (List<QuizQuestionDTO>) session.getAttribute(QUIZ_QUESTIONS);
-        
-        QuizQuestionService quizQuestionService = new QuizQuestionService();
-        
-        request.setAttribute(CORRECT_ANS_NO, quizQuestionService.getNoOfCorrectAnswer(quizQuestions));
-        request.setAttribute(SCORE, quizQuestionService.calculateScore(quizQuestions));
-        
-        request.getRequestDispatcher(FinishQuizRequest.VIEW).forward(request, response);
     }
 
     /**
@@ -75,6 +69,40 @@ public class FinishQuizServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
+        HttpSession session = request.getSession();
+        
+        // update answer
+        QuizQuestionService quizQuestionService = new QuizQuestionService();
+        List<QuizQuestionDTO> quizQuestions = quizQuestionService
+                .updateAnswerToQuizQuestion(request);
+        
+        // calculate score
+        QuizService quizService = new QuizService();
+        QuizDTO quiz = (QuizDTO) session.getAttribute(CommonAttribute.QUIZ);
+        quiz.setScore(quizQuestionService.calculateScore(quizQuestions));
+        
+        try {
+            // save to database
+            quizService.updateQuizScore(quiz);
+            quizQuestionService.saveQuizQuestionList(quizQuestions);
+            
+            // get latest information
+            quiz = quizService.getQuizById(quiz.getQuizId());
+        } catch (SQLException | ClassNotFoundException ex) {
+            Logger.getLogger(FinishQuizServlet.class.getName()).log(Level.SEVERE, null, ex);
+            session.setAttribute(ERROR, Boolean.TRUE);
+        }
+        
+        request.setAttribute(CommonAttribute.CORRECT_ANS_NO, 
+                quizQuestionService.getNoOfCorrectAnswer(quizQuestions));
+        request.setAttribute(CommonAttribute.QUIZ, quiz);
+        
+        session.removeAttribute(CommonAttribute.QUESTIONS);
+        session.removeAttribute(CommonAttribute.QUIZ);
+        session.removeAttribute(CommonAttribute.QUIZ_QUESTIONS);
+        session.removeAttribute(CommonAttribute.QUESTION_NO);
+        
+        request.getRequestDispatcher(FinishQuizRequest.VIEW).forward(request, response);
     }
 
     /**

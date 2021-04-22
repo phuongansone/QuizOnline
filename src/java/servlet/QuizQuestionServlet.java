@@ -2,14 +2,10 @@ package servlet;
 
 import common.CommonAttribute;
 import static common.CommonAttribute.QUESTION;
-import static common.CommonAttribute.QUIZ_QUESTIONS;
 import common.RequestMapping.QuizQuestionRequest;
-import common.RequestParam.AnswerParam;
+import common.RequestMapping.SubjectListRequest;
 import static common.RequestParam.CURRENT;
-import static common.RequestParam.INDEX;
-import dto.AnswerDTO;
 import dto.QuestionDTO;
-import dto.QuizQuestionDTO;
 import java.io.IOException;
 import java.util.List;
 import javax.servlet.ServletException;
@@ -17,6 +13,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import service.QuizQuestionService;
 import util.StringUtil;
 
 /**
@@ -52,9 +49,16 @@ public class QuizQuestionServlet extends HttpServlet {
             throws ServletException, IOException {
         processRequest(request, response);
         
+        HttpSession session = request.getSession();
+        
         int current = StringUtil.parseInt(request.getParameter(CURRENT), 0);
-        List<QuestionDTO> questions = (List<QuestionDTO>) request.getSession()
-                .getAttribute(CommonAttribute.QUESTIONS);
+        List<QuestionDTO> questions = (List<QuestionDTO>) session.getAttribute(CommonAttribute.QUESTIONS);
+        
+        // if there is no questions to load
+        if (questions == null) {
+            response.sendRedirect(SubjectListRequest.ACTION);
+            return;
+        }
         
         QuestionDTO currentQuestion = questions.get(current);
         request.setAttribute(QUESTION, currentQuestion);
@@ -77,30 +81,13 @@ public class QuizQuestionServlet extends HttpServlet {
         
         HttpSession session = request.getSession();
         
-        int answerId = StringUtil.parseInt(request.getParameter(AnswerParam.ANSWER_ID), -1);
-        int index = Integer.parseInt(request.getParameter(INDEX));
-        
         // save selected answer to session
-        List<QuizQuestionDTO> quizQuestions = (List<QuizQuestionDTO>) session.getAttribute(QUIZ_QUESTIONS);
-        
-        QuestionDTO currentQuestion = quizQuestions.get(index).getQuestion();
-        AnswerDTO selectedAnswer = currentQuestion.getAnswers()
-                .stream()
-                .filter((AnswerDTO ans) 
-                        -> ans.getAnswerId() == answerId)
-                .findFirst()
-                .orElse(null);
-        quizQuestions.get(index).setAnswer(selectedAnswer);
-        
-        session.setAttribute(CommonAttribute.QUIZ_QUESTIONS, quizQuestions);
+        QuizQuestionService quizQuestionService = new QuizQuestionService();
+        session.setAttribute(CommonAttribute.QUIZ_QUESTIONS, 
+                quizQuestionService.updateAnswerToQuizQuestion(request));
         
         // fetch next question
-        int current = Integer.parseInt(request.getParameter(CURRENT));
-        List<QuestionDTO> questions = (List<QuestionDTO>) request.getSession()
-                .getAttribute(CommonAttribute.QUESTIONS);
-        
-        QuestionDTO question = questions.get(current);
-        request.setAttribute(QUESTION, question);
+        request.setAttribute(QUESTION, quizQuestionService.getNextQuestion(request));
         
         request.getRequestDispatcher(QuizQuestionRequest.VIEW)
                 .forward(request, response);

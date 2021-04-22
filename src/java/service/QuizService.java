@@ -43,4 +43,9 @@ public class QuizService {
             throws SQLException, ClassNotFoundException {
         return quizDAO.getQuizById(quizId);
     }
+    
+    public boolean updateQuizScore(QuizDTO quiz) 
+            throws SQLException, ClassNotFoundException {
+        return quizDAO.updateQuizScore(quiz);
+    }
 }

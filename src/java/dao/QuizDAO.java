@@ -31,6 +31,9 @@ public class QuizDAO {
             + "INNER JOIN subject s ON qm.subject_id = s.subject_id "
             + "WHERE quiz_id = ?";
     
+    private static final String UPDATE_QUIZ_SCORE = "UPDATE quiz SET score = ?, "
+            + "is_active = ? WHERE quiz_id = ?";
+    
     public int insertQuiz(QuizDTO quiz) 
             throws SQLException, ClassNotFoundException {
         Connection conn = null;
@@ -91,6 +94,32 @@ public class QuizDAO {
         }
         
         return quizDTO;
+    }
+    
+    public boolean updateQuizScore(QuizDTO quiz) 
+            throws SQLException, ClassNotFoundException {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        boolean updated = false;
+        
+        try {
+            conn = DatabaseUtil.makeConnection();
+            
+            if (conn != null) {
+                ps = conn.prepareStatement(UPDATE_QUIZ_SCORE);
+                ps.setDouble(1, quiz.getScore());
+                ps.setBoolean(2, quiz.isActive());
+                ps.setInt(3, quiz.getQuizId());
+                
+                updated = ps.executeUpdate() > 0;
+            }
+        } finally {
+            DatabaseUtil.closeConnection(conn, ps, rs);
+        }
+        
+        return updated;
     }
     
     private QuizDTO mapResultSetToQuizDTO(ResultSet rs) throws SQLException {

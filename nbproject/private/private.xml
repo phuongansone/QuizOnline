@@ -3,9 +3,9 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/E:/java-web/exercise/AnDTP_P0014_QuizOnline/src/java/service/QuizQuestionService.java</file>
-            <file>file:/E:/java-web/exercise/AnDTP_P0014_QuizOnline/web/WEB-INF/pages/search-question.jsp</file>
-            <file>file:/E:/java-web/exercise/AnDTP_P0014_QuizOnline/src/java/service/QuizMetaService.java</file>
+            <file>file:/E:/java-web/exercise/AnDTP_P0014_QuizOnline/src/java/dto/QuizMetaDTO.java</file>
+            <file>file:/E:/java-web/exercise/AnDTP_P0014_QuizOnline/src/java/dto/QuizDTO.java</file>
+            <file>file:/E:/java-web/exercise/AnDTP_P0014_QuizOnline/web/WEB-INF/pages/finish-quiz.jsp</file>
             <file>file:/E:/java-web/exercise/AnDTP_P0014_QuizOnline/src/java/servlet/FinishQuizServlet.java</file>
             <file>file:/E:/java-web/exercise/AnDTP_P0014_QuizOnline/web/WEB-INF/pages/quiz-question.jsp</file>
         </group>

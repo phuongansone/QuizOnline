@@ -1,10 +1,21 @@
 package service;
 
+import common.CommonAttribute;
+import static common.CommonAttribute.QUIZ_QUESTIONS;
+import common.RequestParam;
+import static common.RequestParam.CURRENT;
+import static common.RequestParam.INDEX;
+import dao.QuizQuestionDAO;
+import dto.AnswerDTO;
 import dto.QuestionDTO;
 import dto.QuizDTO;
 import dto.QuizQuestionDTO;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import util.StringUtil;
 
 /**
  *
@@ -12,6 +23,12 @@ import java.util.List;
  */
 public class QuizQuestionService {
     private static final double FULL_SCORE = 10;
+    private final QuizQuestionDAO quizQuestionDAO;
+
+    public QuizQuestionService() {
+        quizQuestionDAO = new QuizQuestionDAO();
+    }
+    
     public List<QuizQuestionDTO> generateQuizQuestionDTO
         (List<QuestionDTO> questions, QuizDTO quiz) {
         List<QuizQuestionDTO> quizQuestions = new ArrayList<>();
@@ -22,6 +39,39 @@ public class QuizQuestionService {
         
         return quizQuestions;
     }
+        
+    public List<QuizQuestionDTO> updateAnswerToQuizQuestion(HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        
+        int answerId = StringUtil.parseInt(request.getParameter(RequestParam.AnswerParam.ANSWER_ID), -1);
+        int index = Integer.parseInt(request.getParameter(INDEX));
+        
+        // save selected answer to session
+        List<QuizQuestionDTO> quizQuestions = (List<QuizQuestionDTO>) session.getAttribute(QUIZ_QUESTIONS);
+        
+        QuestionDTO currentQuestion = quizQuestions.get(index).getQuestion();
+        
+        if (answerId != -1) {
+            AnswerDTO selectedAnswer = currentQuestion.getAnswers()
+                    .stream()
+                    .filter((AnswerDTO ans) 
+                            -> ans.getAnswerId() == answerId)
+                    .findFirst()
+                    .orElse(null);
+
+            quizQuestions.get(index).setAnswer(selectedAnswer);            
+        }
+        
+        return quizQuestions;
+    }
+    
+    public QuestionDTO getNextQuestion(HttpServletRequest request) {
+        int current = Integer.parseInt(request.getParameter(CURRENT));
+        List<QuestionDTO> questions = (List<QuestionDTO>) request.getSession()
+                .getAttribute(CommonAttribute.QUESTIONS);
+        
+        return questions.get(current);
+    }
     
     public double calculateScore(List<QuizQuestionDTO> quizQuestions) {
         double score = 0;
@@ -29,11 +79,12 @@ public class QuizQuestionService {
         int noOfQuestion;
         double scoreUnit;
         
-        for (QuizQuestionDTO quizQuesition : quizQuestions) {
-            noOfQuestion = quizQuesition.getQuiz().getQuizMeta().getNoOfQuestion();
+        for (QuizQuestionDTO quizQuestion : quizQuestions) {
+            noOfQuestion = quizQuestion.getQuiz().getQuizMeta().getNoOfQuestion();
             scoreUnit = FULL_SCORE / noOfQuestion;
             
-            if (quizQuesition.getAnswer() != null && quizQuesition.getAnswer().isIsCorrect()) {
+            if (quizQuestion.getAnswer() != null && quizQuestion.getAnswer().isIsCorrect()) {
+                quizQuestion.setScore(scoreUnit);
                 score += scoreUnit;
             }
         }
@@ -41,7 +92,7 @@ public class QuizQuestionService {
         return score;
     }
     
-    public double getNoOfCorrectAnswer(List<QuizQuestionDTO> quizQuestions) {
+    public int getNoOfCorrectAnswer(List<QuizQuestionDTO> quizQuestions) {
         int correctAnswer = 0;
         
         for (QuizQuestionDTO quizQuesition : quizQuestions) {
@@ -51,5 +102,12 @@ public class QuizQuestionService {
         }
         
         return correctAnswer;
+    }
+    
+    public void saveQuizQuestionList(List<QuizQuestionDTO> quizQuestions) 
+            throws SQLException, ClassNotFoundException {
+        for (QuizQuestionDTO quizQuestion : quizQuestions) {
+            quizQuestionDAO.insertQuizQuestion(quizQuestion);
+        }
     }
 }

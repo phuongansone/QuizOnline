@@ -2,7 +2,6 @@ package servlet;
 
 import common.CommonAttribute;
 import static common.CommonAttribute.ERROR;
-import common.RequestMapping;
 import common.RequestMapping.SubjectListRequest;
 import dto.SubjectDTO;
 import java.io.IOException;

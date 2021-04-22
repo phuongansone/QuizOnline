@@ -93,4 +93,11 @@ public class RequestMapping {
         private FinishQuizRequest() {
         }
     }
+    
+    public static class QuizHistoryRequest {
+        public static final String ACTION = "quizHistory";
+        public static final String VIEW = "/WEB-INF/pages/quiz-history.jsp";
+        private QuizHistoryRequest() {
+        }
+    }
 }
