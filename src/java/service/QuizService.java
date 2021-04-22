@@ -60,23 +60,23 @@ public class QuizService {
         return quizDAO.countByEmail(email);
     }
     
-    public List<QuizDTO> getQuizBySubjectName(String keyword, int off, int len) 
-            throws SQLException, ClassNotFoundException {
-        return quizDAO.getQuizBySubjectName(keyword, off, len);
+    public List<QuizDTO> getQuizBySubjectName(String keyword, String email,
+            int off, int len) throws SQLException, ClassNotFoundException {
+        return quizDAO.getQuizBySubjectName(keyword, email, off, len);
     }
     
-    public int countBySubjectName(String keyword) 
+    public int countBySubjectName(String keyword, String email) 
             throws SQLException, ClassNotFoundException {
-        return quizDAO.countBySubjectName(keyword);
+        return quizDAO.countBySubjectName(keyword, email);
     }
     
-    public List<QuizDTO> getQuizBySubjectId(int subjectId, int off, int len) 
-            throws SQLException, ClassNotFoundException {
-        return quizDAO.getQuizBySubjectId(subjectId, off, len);
+    public List<QuizDTO> getQuizBySubjectId(int subjectId, String email, 
+            int off, int len) throws SQLException, ClassNotFoundException {
+        return quizDAO.getQuizBySubjectId(subjectId, email, off, len);
     }
     
-    public int countBySubjectId(int subjectId) 
+    public int countBySubjectId(int subjectId, String email) 
             throws SQLException, ClassNotFoundException {
-        return quizDAO.countBySubjectId(subjectId);
+        return quizDAO.countBySubjectId(subjectId, email);
     }
 }

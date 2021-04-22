@@ -29,6 +29,8 @@ public class CommonAttribute {
     
     public static final String SCORE = "SCORE";
     
+    public static final String TIMER = "TIMER";
+    
     // Notification
     public static final String REGISTERED = "REGISTERED";
     public static final String EMAIL_EXISTED = "EMAIL_EXISTED";

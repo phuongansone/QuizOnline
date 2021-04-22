@@ -18,6 +18,8 @@ public class RequestParam {
     public static final String CURRENT = "current";
     public static final String INDEX = "index";
     
+    public static final String TIMER = "timer";
+    
     public static class UserParam {
         public static final String EMAIL = "email";
         public static final String PASSWORD = "password";

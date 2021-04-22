@@ -75,20 +75,22 @@ public class QuizHistoryServlet extends HttpServlet {
         
         try {
             if (keyword != null && !keyword.isBlank()) {
-                totalPage = getTotalNoOfPage(quizService.countBySubjectName(keyword), 
+                totalPage = getTotalNoOfPage(quizService.countBySubjectName(keyword, user.getEmail()), 
                         RECORD_PER_PAGE);
                 pages = getPagesArr(totalPage);
                 
                 int offset = (page - 1) * RECORD_PER_PAGE;
                 
-                quizzes = quizService.getQuizBySubjectName(keyword, offset, RECORD_PER_PAGE);
+                quizzes = quizService.getQuizBySubjectName(keyword, user.getEmail(),
+                        offset, RECORD_PER_PAGE);
             } else if (subjectId != -1) {
-                totalPage = getTotalNoOfPage(quizService.countBySubjectId(subjectId), 
+                totalPage = getTotalNoOfPage(quizService.countBySubjectId(subjectId, user.getEmail()), 
                         RECORD_PER_PAGE);
                 pages = getPagesArr(totalPage);
                 
                 int offset = (page - 1) * RECORD_PER_PAGE;
-                quizzes = quizService.getQuizBySubjectId(subjectId, offset, RECORD_PER_PAGE);
+                quizzes = quizService.getQuizBySubjectId(subjectId, user.getEmail(), 
+                        offset, RECORD_PER_PAGE);
             } else {
                 totalPage = getTotalNoOfPage(quizService.countByEmail(user.getEmail()), 
                         RECORD_PER_PAGE);

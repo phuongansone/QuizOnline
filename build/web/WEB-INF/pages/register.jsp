@@ -25,7 +25,7 @@
                         </header>
                         <article class="card-body">
                             <form method="POST" action="register" 
-                                  class="form-signin">
+                                  class="form-signin" onsubmit="return validation()">
                                 <div class="form-group">
                                     <label for="email">Email address</label>
                                     <input type="email" class="form-control" id="email" 
@@ -55,6 +55,8 @@
                                     <input type="password" class="form-control" 
                                            id="confirm-password" name="confirm-password" 
                                            placeholder="Confirm password" required>
+                                    <small id="message" class="form-text text-muted red">
+                                    </small>
                                 </div>
                                 <div class="form-group">
                                     <button type="submit" class="btn btn-secondary btn-block">Register</button>
@@ -75,12 +77,16 @@
         var CONFIRM_PASSWORD = '#confirm-password';
         var MESSAGE = '#message';
         
-        $(PASSWORD + ", " + CONFIRM_PASSWORD).on('keyup', function() {
+        $(PASSWORD + ', ' + CONFIRM_PASSWORD).on('keyup', function() {
             if ($(PASSWORD).val() !== $(CONFIRM_PASSWORD).val()) {
-                $(CONFIRM_PASSWORD)[0].setCustomValidity('Password do not match');
+                $(MESSAGE).text('Password does not match');
             } else {
-                $(CONFIRM_PASSWORD)[0].setCustomValidity('');
+                $(MESSAGE).text('');
             }
         });
+        
+        function validation() {
+            return $(PASSWORD).val() === $(CONFIRM_PASSWORD).val();
+        }
     </script>
 </html>

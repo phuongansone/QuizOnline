@@ -57,14 +57,14 @@ public class QuizDAO {
             + "INNER JOIN quiz_meta qm USING (quiz_meta_id) "
             + "INNER JOIN subject s "
             + "ON qm.subject_id = s.subject_id "
-            + "WHERE s.subject_id = ? "
+            + "WHERE s.subject_id = ? AND email = ?"
             + "LIMIT ?, ?";
     
     private static final String COUNT_BY_SUBJECT_ID = "SELECT count(*) "
             + "FROM quiz q "
             + "INNER JOIN quiz_meta qm USING (quiz_meta_id) "
             + "INNER JOIN subject s ON qm.subject_id = s.subject_id "
-            + "WHERE s.subject_id = ?";
+            + "WHERE s.subject_id = ? AND email = ?";
     
     private static final String GET_BY_SUBJECT_NAME = "SELECT quiz_id, email, score, "
             + "q.is_active, q.create_at, q.update_at, "
@@ -74,14 +74,14 @@ public class QuizDAO {
             + "INNER JOIN quiz_meta qm USING (quiz_meta_id) "
             + "INNER JOIN subject s "
             + "ON qm.subject_id = s.subject_id "
-            + "WHERE s.subject_name LIKE ? "
+            + "WHERE s.subject_name LIKE ? AND email = ?"
             + "LIMIT ?, ?";
     
     private static final String COUNT_BY_SUBJECT_NAME = "SELECT count(*) "
             + "FROM quiz q "
             + "INNER JOIN quiz_meta qm USING (quiz_meta_id) "
             + "INNER JOIN subject s ON qm.subject_id = s.subject_id "
-            + "WHERE s.subject_name LIKE ?";
+            + "WHERE s.subject_name LIKE ? AND email = ?";
     
     public int insertQuiz(QuizDTO quiz) 
             throws SQLException, ClassNotFoundException {
@@ -202,8 +202,8 @@ public class QuizDAO {
         return total;
     }
     
-    public List<QuizDTO> getQuizBySubjectName(String keyword, int off, int len) 
-            throws SQLException, ClassNotFoundException {
+    public List<QuizDTO> getQuizBySubjectName(String keyword, String email, 
+            int off, int len) throws SQLException, ClassNotFoundException {
         Connection conn = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -216,8 +216,9 @@ public class QuizDAO {
             if (conn != null) {
                 ps = conn.prepareStatement(GET_BY_SUBJECT_NAME);
                 ps.setString(1, "%" + keyword + "%");
-                ps.setInt(2, off);
-                ps.setInt(3, len);
+                ps.setString(2, email);
+                ps.setInt(3, off);
+                ps.setInt(4, len);
                 
                 rs = ps.executeQuery();
                 while(rs.next()) {
@@ -232,7 +233,7 @@ public class QuizDAO {
         return quizDTOLst;
     }
     
-    public int countBySubjectName(String keyword) 
+    public int countBySubjectName(String keyword, String email) 
             throws SQLException, ClassNotFoundException {
         Connection conn = null;
         PreparedStatement ps = null;
@@ -246,6 +247,7 @@ public class QuizDAO {
             if (conn != null) {
                 ps = conn.prepareStatement(COUNT_BY_SUBJECT_NAME);
                 ps.setString(1, "%" + keyword + "%");
+                ps.setString(2, email);
                 
                 rs = ps.executeQuery();
                 if (rs.next()) {
@@ -259,7 +261,7 @@ public class QuizDAO {
         return total;
     }
     
-    public int countBySubjectId(int subjectId) 
+    public int countBySubjectId(int subjectId, String email) 
             throws SQLException, ClassNotFoundException {
         Connection conn = null;
         PreparedStatement ps = null;
@@ -273,6 +275,7 @@ public class QuizDAO {
             if (conn != null) {
                 ps = conn.prepareStatement(COUNT_BY_SUBJECT_ID);
                 ps.setInt(1, subjectId);
+                ps.setString(2, email);
                 
                 rs = ps.executeQuery();
                 if (rs.next()) {
@@ -286,8 +289,8 @@ public class QuizDAO {
         return total;
     }
     
-    public List<QuizDTO> getQuizBySubjectId(int subjectId, int off, int len) 
-            throws SQLException, ClassNotFoundException {
+    public List<QuizDTO> getQuizBySubjectId(int subjectId, String email,
+            int off, int len) throws SQLException, ClassNotFoundException {
         Connection conn = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -300,8 +303,9 @@ public class QuizDAO {
             if (conn != null) {
                 ps = conn.prepareStatement(GET_BY_SUBJECT_ID);
                 ps.setInt(1, subjectId);
-                ps.setInt(2, off);
-                ps.setInt(3, len);
+                ps.setString(2, email);
+                ps.setInt(3, off);
+                ps.setInt(4, len);
                 
                 rs = ps.executeQuery();
                 while(rs.next()) {

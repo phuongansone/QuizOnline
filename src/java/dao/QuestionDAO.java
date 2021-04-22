@@ -88,7 +88,8 @@ public class QuestionDAO {
             + "create_at, create_by, update_at, update_by "
             + "FROM question "
             + "INNER JOIN subject USING (subject_id) "
-            + "WHERE question.subject_id = ? ORDER BY RAND() LIMIT ?";
+            + "WHERE question.subject_id = ? AND question.is_active = 1 "
+            + "ORDER BY RAND() LIMIT ?";
     
     public int insertQuestion(QuestionDTO question) 
             throws SQLException, ClassNotFoundException {

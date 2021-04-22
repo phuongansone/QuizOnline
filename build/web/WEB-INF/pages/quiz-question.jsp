@@ -23,11 +23,11 @@
                     <h6 class="card-title">${param.current == null ? 1 : param.current + 1}. ${question.questionContent}</h6>
                 </div>
                     <input type="hidden" name="timer" 
-                           value="${param.timer == null ? (quiz.quizMeta.duration * 60) : param.timer}"/>
+                           value="${sessionScope.TIMER == null ? (quiz.quizMeta.duration * 60) : sessionScope.TIMER}"/>
                 <div class="card-text mr-3">
                     <ul>
                         <c:forEach items="${question.answers}" var="answer">
-                            <li class="list-group-item ${answer.isCorrect == true ? 'list-group-item-success' : ''}">
+                            <li class="list-group-item">
                                 <input value="${answer.answerId}" class="mr-2"
                                        name="answer_id" type="radio"
                                        ${quizQuestion.answer.answerId == answer.answerId ? 'checked' : ''}>

@@ -101,6 +101,7 @@ public class FinishQuizServlet extends HttpServlet {
         session.removeAttribute(CommonAttribute.QUIZ);
         session.removeAttribute(CommonAttribute.QUIZ_QUESTIONS);
         session.removeAttribute(CommonAttribute.QUESTION_NO);
+        session.removeAttribute(CommonAttribute.TIMER);
         
         request.getRequestDispatcher(FinishQuizRequest.VIEW).forward(request, response);
     }

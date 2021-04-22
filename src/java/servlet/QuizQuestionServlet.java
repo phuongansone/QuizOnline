@@ -4,6 +4,7 @@ import common.CommonAttribute;
 import static common.CommonAttribute.QUESTION;
 import common.RequestMapping.QuizQuestionRequest;
 import common.RequestMapping.SubjectListRequest;
+import common.RequestParam;
 import static common.RequestParam.CURRENT;
 import dto.QuestionDTO;
 import java.io.IOException;
@@ -82,6 +83,8 @@ public class QuizQuestionServlet extends HttpServlet {
         
         HttpSession session = request.getSession();
         
+        String remainTime = request.getParameter(RequestParam.TIMER);
+        
         // save selected answer to session
         QuizQuestionService quizQuestionService = new QuizQuestionService();
         session.setAttribute(CommonAttribute.QUIZ_QUESTIONS, 
@@ -89,6 +92,7 @@ public class QuizQuestionServlet extends HttpServlet {
         
         // fetch next question
         request.setAttribute(QUESTION, quizQuestionService.getNextQuestion(request));
+        session.setAttribute(CommonAttribute.TIMER, remainTime);
         
         request.getRequestDispatcher(QuizQuestionRequest.VIEW)
                 .forward(request, response);
