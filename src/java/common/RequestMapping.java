@@ -100,4 +100,11 @@ public class RequestMapping {
         private QuizHistoryRequest() {
         }
     }
+    
+    public static class HistoryDetailRequest {
+        public static final String ACTION = "historyDetail";
+        public static final String VIEW = "/WEB-INF/pages/history-detail.jsp";
+        private HistoryDetailRequest() {
+        }
+    }
 }

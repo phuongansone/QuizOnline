@@ -5,6 +5,7 @@ import static common.CommonAttribute.QUIZ_QUESTIONS;
 import common.RequestParam;
 import static common.RequestParam.CURRENT;
 import static common.RequestParam.INDEX;
+import dao.AnswerDAO;
 import dao.QuizQuestionDAO;
 import dto.AnswerDTO;
 import dto.QuestionDTO;
@@ -13,6 +14,7 @@ import dto.QuizQuestionDTO;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import util.StringUtil;
@@ -24,9 +26,11 @@ import util.StringUtil;
 public class QuizQuestionService {
     private static final double FULL_SCORE = 10;
     private final QuizQuestionDAO quizQuestionDAO;
+    private final AnswerDAO answerDAO;
 
     public QuizQuestionService() {
         quizQuestionDAO = new QuizQuestionDAO();
+        answerDAO = new AnswerDAO();
     }
     
     public List<QuizQuestionDTO> generateQuizQuestionDTO
@@ -108,6 +112,27 @@ public class QuizQuestionService {
             throws SQLException, ClassNotFoundException {
         for (QuizQuestionDTO quizQuestion : quizQuestions) {
             quizQuestionDAO.insertQuizQuestion(quizQuestion);
+        }
+    }
+    
+    public List<QuizQuestionDTO> getQuizQuestionByQuizId(int quizId) 
+            throws SQLException, ClassNotFoundException {
+        List<QuizQuestionDTO> quizQuestions = quizQuestionDAO.getQuizQuestionByQuizId(quizId);
+        List<QuestionDTO> questions = quizQuestions
+                .stream()
+                .map((QuizQuestionDTO dto) -> dto.getQuestion())
+                .collect(Collectors.toList());
+        
+        for (QuestionDTO question : questions) {
+            question.setAnswers(answerDAO.getAnswersByQuestionId(question.getQuestionId()));
+        }
+        
+        return quizQuestions;
+    }
+
+    private static class QuestionDAO {
+
+        public QuestionDAO() {
         }
     }
 }

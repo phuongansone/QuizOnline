@@ -72,6 +72,14 @@
         <servlet-name>FinishQuizServlet</servlet-name>
         <servlet-class>servlet.FinishQuizServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>QuizHistoryServlet</servlet-name>
+        <servlet-class>servlet.QuizHistoryServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>HistoryDetailServlet</servlet-name>
+        <servlet-class>servlet.HistoryDetailServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>LoginServlet</servlet-name>
         <url-pattern>/LoginServlet</url-pattern>
@@ -123,5 +131,13 @@
     <servlet-mapping>
         <servlet-name>FinishQuizServlet</servlet-name>
         <url-pattern>/FinishQuizServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>QuizHistoryServlet</servlet-name>
+        <url-pattern>/QuizHistoryServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>HistoryDetailServlet</servlet-name>
+        <url-pattern>/HistoryDetailServlet</url-pattern>
     </servlet-mapping>
 </web-app>

@@ -11,6 +11,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import util.DatabaseUtil;
 
 /**
@@ -33,6 +35,53 @@ public class QuizDAO {
     
     private static final String UPDATE_QUIZ_SCORE = "UPDATE quiz SET score = ?, "
             + "is_active = ? WHERE quiz_id = ?";
+    
+    private static final String GET_BY_EMAIL = "SELECT quiz_id, email, score, "
+            + "q.is_active, q.create_at, q.update_at, "
+            + "s.subject_id, s.subject_name, "
+            + "qm.title, qm.question_no, qm.duration "
+            + "FROM quiz q "
+            + "INNER JOIN quiz_meta qm USING (quiz_meta_id) "
+            + "INNER JOIN subject s "
+            + "ON qm.subject_id = s.subject_id "
+            + "WHERE q.email = ? "
+            + "LIMIT ?, ?";
+    
+    private static final String COUNT_BY_EMAIL = "SELECT count(*) FROM quiz q WHERE q.email = ?";
+    
+    private static final String GET_BY_SUBJECT_ID = "SELECT quiz_id, email, score, "
+            + "q.is_active, q.create_at, q.update_at, "
+            + "s.subject_id, s.subject_name, "
+            + "qm.title, qm.question_no, qm.duration "
+            + "FROM quiz q "
+            + "INNER JOIN quiz_meta qm USING (quiz_meta_id) "
+            + "INNER JOIN subject s "
+            + "ON qm.subject_id = s.subject_id "
+            + "WHERE s.subject_id = ? "
+            + "LIMIT ?, ?";
+    
+    private static final String COUNT_BY_SUBJECT_ID = "SELECT count(*) "
+            + "FROM quiz q "
+            + "INNER JOIN quiz_meta qm USING (quiz_meta_id) "
+            + "INNER JOIN subject s ON qm.subject_id = s.subject_id "
+            + "WHERE s.subject_id = ?";
+    
+    private static final String GET_BY_SUBJECT_NAME = "SELECT quiz_id, email, score, "
+            + "q.is_active, q.create_at, q.update_at, "
+            + "s.subject_id, s.subject_name, "
+            + "qm.title, qm.question_no, qm.duration "
+            + "FROM quiz q "
+            + "INNER JOIN quiz_meta qm USING (quiz_meta_id) "
+            + "INNER JOIN subject s "
+            + "ON qm.subject_id = s.subject_id "
+            + "WHERE s.subject_name LIKE ? "
+            + "LIMIT ?, ?";
+    
+    private static final String COUNT_BY_SUBJECT_NAME = "SELECT count(*) "
+            + "FROM quiz q "
+            + "INNER JOIN quiz_meta qm USING (quiz_meta_id) "
+            + "INNER JOIN subject s ON qm.subject_id = s.subject_id "
+            + "WHERE s.subject_name LIKE ?";
     
     public int insertQuiz(QuizDTO quiz) 
             throws SQLException, ClassNotFoundException {
@@ -94,6 +143,177 @@ public class QuizDAO {
         }
         
         return quizDTO;
+    }
+    
+    public List<QuizDTO> getQuizByEmail(String email, int off, int len) 
+            throws SQLException, ClassNotFoundException {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        List<QuizDTO> quizDTOLst = new ArrayList<>();
+        
+        try {
+            conn = DatabaseUtil.makeConnection();
+            
+            if (conn != null) {
+                ps = conn.prepareStatement(GET_BY_EMAIL);
+                ps.setString(1, email);
+                ps.setInt(2, off);
+                ps.setInt(3, len);
+                
+                rs = ps.executeQuery();
+                while(rs.next()) {
+                    quizDTOLst.add(mapResultSetToQuizDTO(rs));
+                }
+            }
+            
+        } finally {
+            DatabaseUtil.closeConnection(conn, ps, rs);
+        }
+        
+        return quizDTOLst;
+    }
+    
+    public int countByEmail(String email) 
+            throws SQLException, ClassNotFoundException {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        int total = 0;
+        
+        try {
+            conn = DatabaseUtil.makeConnection();
+            
+            if (conn != null) {
+                ps = conn.prepareStatement(COUNT_BY_EMAIL);
+                ps.setString(1, email);
+                
+                rs = ps.executeQuery();
+                if (rs.next()) {
+                    total = rs.getInt(1);
+                }
+            }
+        } finally {
+            DatabaseUtil.closeConnection(conn, ps, rs);
+        }
+        
+        return total;
+    }
+    
+    public List<QuizDTO> getQuizBySubjectName(String keyword, int off, int len) 
+            throws SQLException, ClassNotFoundException {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        List<QuizDTO> quizDTOLst = new ArrayList<>();
+        
+        try {
+            conn = DatabaseUtil.makeConnection();
+            
+            if (conn != null) {
+                ps = conn.prepareStatement(GET_BY_SUBJECT_NAME);
+                ps.setString(1, "%" + keyword + "%");
+                ps.setInt(2, off);
+                ps.setInt(3, len);
+                
+                rs = ps.executeQuery();
+                while(rs.next()) {
+                    quizDTOLst.add(mapResultSetToQuizDTO(rs));
+                }
+            }
+            
+        } finally {
+            DatabaseUtil.closeConnection(conn, ps, rs);
+        }
+        
+        return quizDTOLst;
+    }
+    
+    public int countBySubjectName(String keyword) 
+            throws SQLException, ClassNotFoundException {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        int total = 0;
+        
+        try {
+            conn = DatabaseUtil.makeConnection();
+            
+            if (conn != null) {
+                ps = conn.prepareStatement(COUNT_BY_SUBJECT_NAME);
+                ps.setString(1, "%" + keyword + "%");
+                
+                rs = ps.executeQuery();
+                if (rs.next()) {
+                    total = rs.getInt(1);
+                }
+            }
+        } finally {
+            DatabaseUtil.closeConnection(conn, ps, rs);
+        }
+        
+        return total;
+    }
+    
+    public int countBySubjectId(int subjectId) 
+            throws SQLException, ClassNotFoundException {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        int total = 0;
+        
+        try {
+            conn = DatabaseUtil.makeConnection();
+            
+            if (conn != null) {
+                ps = conn.prepareStatement(COUNT_BY_SUBJECT_ID);
+                ps.setInt(1, subjectId);
+                
+                rs = ps.executeQuery();
+                if (rs.next()) {
+                    total = rs.getInt(1);
+                }
+            }
+        } finally {
+            DatabaseUtil.closeConnection(conn, ps, rs);
+        }
+        
+        return total;
+    }
+    
+    public List<QuizDTO> getQuizBySubjectId(int subjectId, int off, int len) 
+            throws SQLException, ClassNotFoundException {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        List<QuizDTO> quizDTOLst = new ArrayList<>();
+        
+        try {
+            conn = DatabaseUtil.makeConnection();
+            
+            if (conn != null) {
+                ps = conn.prepareStatement(GET_BY_SUBJECT_ID);
+                ps.setInt(1, subjectId);
+                ps.setInt(2, off);
+                ps.setInt(3, len);
+                
+                rs = ps.executeQuery();
+                while(rs.next()) {
+                    quizDTOLst.add(mapResultSetToQuizDTO(rs));
+                }
+            }
+            
+        } finally {
+            DatabaseUtil.closeConnection(conn, ps, rs);
+        }
+        
+        return quizDTOLst;
     }
     
     public boolean updateQuizScore(QuizDTO quiz) 

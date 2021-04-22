@@ -1,12 +1,11 @@
 package servlet;
 
 import common.CommonAttribute;
-import common.RequestMapping.SearchQuestionRequest;
-import static common.RequestParam.KEYWORD;
+import common.RequestMapping.QuizHistoryRequest;
 import static common.RequestParam.PAGE;
-import static common.RequestParam.STATUS;
-import static common.RequestParam.SUBJECT;
-import dto.QuestionDTO;
+import common.RequestParam.QuizMetaParam;
+import dto.QuizDTO;
+import dto.UserDTO;
 import dto.SubjectDTO;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -18,7 +17,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import service.QuestionService;
+import javax.servlet.http.HttpSession;
+import service.QuizService;
 import service.SubjectService;
 import util.StringUtil;
 
@@ -26,8 +26,8 @@ import util.StringUtil;
  *
  * @author andtpse62827
  */
-public class SearchQuestionServlet extends HttpServlet {
-    private static final String RECORD_PER_PAGE = "recordPerPage";
+public class QuizHistoryServlet extends HttpServlet {
+    private static final int RECORD_PER_PAGE = 5;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -42,7 +42,7 @@ public class SearchQuestionServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
     }
-    
+
     /**
      * Handles the HTTP <code>GET</code> method.
      *
@@ -56,75 +56,59 @@ public class SearchQuestionServlet extends HttpServlet {
             throws ServletException, IOException {
         processRequest(request, response);
         
-        String keyword = request.getParameter(KEYWORD);
-        String subject = request.getParameter(SUBJECT);
-        String status = request.getParameter(STATUS);
+        HttpSession session = request.getSession();
+        UserDTO user = (UserDTO) session.getAttribute(CommonAttribute.USER);
+        
+        int subjectId = StringUtil.parseInt(request.getParameter(QuizMetaParam.SUBJECT_ID), -1);
+        String keyword = request.getParameter(QuizMetaParam.SUBJECT_NAME);
         
         // get targetted page
         int page = getCurrentPage(request);
         int totalPage;
         int[] pages = null;
-        List<QuestionDTO> questions = new ArrayList<>();
-        List<SubjectDTO> subjects = new ArrayList<>();
         
-        // get number of record per page configuration
-        int recordPerPage = Integer.parseInt(request.getServletContext()
-                .getInitParameter(RECORD_PER_PAGE));
+        QuizService quizService = new QuizService();
+        List<QuizDTO> quizzes = new ArrayList<>();
         
-        QuestionService questionService = new QuestionService();
         SubjectService subjectService = new SubjectService();
+        List<SubjectDTO> subjects = new ArrayList<>();
         
         try {
             if (keyword != null && !keyword.isBlank()) {
-                totalPage = getTotalNoOfPage(
-                        questionService.countQuestionsByName(keyword), recordPerPage);
-                
+                totalPage = getTotalNoOfPage(quizService.countBySubjectName(keyword), 
+                        RECORD_PER_PAGE);
                 pages = getPagesArr(totalPage);
-                int offset = (page - 1) * recordPerPage;
                 
-                questions = questionService.getQuestionsByName(keyword, offset, recordPerPage);
-            } else if (status != null && !status.isBlank()) {
-                boolean isActive = status.equalsIgnoreCase("1");
+                int offset = (page - 1) * RECORD_PER_PAGE;
                 
-                totalPage = getTotalNoOfPage(
-                        questionService.countQuestionsByStatus(isActive), 
-                        recordPerPage);
+                quizzes = quizService.getQuizBySubjectName(keyword, offset, RECORD_PER_PAGE);
+            } else if (subjectId != -1) {
+                totalPage = getTotalNoOfPage(quizService.countBySubjectId(subjectId), 
+                        RECORD_PER_PAGE);
                 pages = getPagesArr(totalPage);
-                int offset = (page - 1) * recordPerPage;
                 
-                questions = questionService.getQuestionsByStatus(isActive, offset, recordPerPage);
-            } else if (subject != null && !subject.isBlank()) {
-                int subjectId = StringUtil.parseInt(request.getParameter(SUBJECT), -1);
-                
-                totalPage = getTotalNoOfPage(
-                        questionService.countQuestionsBySubject(subjectId), 
-                        recordPerPage);
-                pages = getPagesArr(totalPage);
-                int offset = (page - 1) * recordPerPage;
-                
-                questions = questionService.getQuestionBySubject(subjectId, offset, recordPerPage);
+                int offset = (page - 1) * RECORD_PER_PAGE;
+                quizzes = quizService.getQuizBySubjectId(subjectId, offset, RECORD_PER_PAGE);
             } else {
-                totalPage = getTotalNoOfPage(questionService.countAllQuestions(), recordPerPage);
+                totalPage = getTotalNoOfPage(quizService.countByEmail(user.getEmail()), 
+                        RECORD_PER_PAGE);
                 pages = getPagesArr(totalPage);
-                int offset = (page - 1) * recordPerPage;
-
-                questions = questionService.getAllQuestions(offset, recordPerPage);
+                
+                int offset = (page - 1) * RECORD_PER_PAGE;
+                quizzes = quizService.getQuizByEmail(user.getEmail(), offset, RECORD_PER_PAGE);
             }
-            
             subjects = subjectService.getActiveSubjects();
         } catch (SQLException | ClassNotFoundException ex) {
-            Logger.getLogger(SearchQuestionServlet.class.getName())
-                    .log(Level.SEVERE, null, ex);
+            Logger.getLogger(QuizHistoryServlet.class.getName()).log(Level.SEVERE, null, ex);
             request.getSession().setAttribute(CommonAttribute.ERROR, Boolean.TRUE);
         }
         
         request.setAttribute(CommonAttribute.PAGE, page);
         request.setAttribute(CommonAttribute.PAGES, pages);
-        request.setAttribute(CommonAttribute.QUESTIONS, questions);
         request.setAttribute(CommonAttribute.SUBJECTS, subjects);
+        request.setAttribute(CommonAttribute.QUIZZES, quizzes);
         
-        request.getRequestDispatcher(SearchQuestionRequest.VIEW)
-                .forward(request, response);
+        request.getRequestDispatcher(QuizHistoryRequest.VIEW).forward(request, response);
     }
 
     /**
@@ -150,7 +134,7 @@ public class SearchQuestionServlet extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }
-    
+
     private int getCurrentPage(HttpServletRequest request) {
         return StringUtil.parseInt(request.getParameter(PAGE), 1);
     }

@@ -13,6 +13,8 @@ public class CommonAttribute {
     
     public static final String QUIZ = "QUIZ";
     
+    public static final String QUIZZES = "QUIZZES";
+    
     public static final String QUESTION = "QUESTION";
     
     public static final String QUESTIONS = "QUESTIONS";

@@ -5,7 +5,9 @@ import common.RequestMapping.CreateQuestionRequest;
 import common.RequestMapping.DeleteQuestionRequest;
 import common.RequestMapping.EditQuestionRequest;
 import common.RequestMapping.FinishQuizRequest;
+import common.RequestMapping.HistoryDetailRequest;
 import common.RequestMapping.LogoutRequest;
+import common.RequestMapping.QuizHistoryRequest;
 import common.RequestMapping.QuizMetaRequest;
 import common.RequestMapping.QuizQuestionRequest;
 import common.RequestMapping.SearchQuestionRequest;
@@ -66,6 +68,8 @@ public class AuthorizationFilter implements Filter {
         STUDENT_PERMISSION.add(TakeQuizRequest.ACTION);
         STUDENT_PERMISSION.add(QuizQuestionRequest.ACTION);
         STUDENT_PERMISSION.add(FinishQuizRequest.ACTION);
+        STUDENT_PERMISSION.add(QuizHistoryRequest.ACTION);
+        STUDENT_PERMISSION.add(HistoryDetailRequest.ACTION);
         STUDENT_PERMISSION.add(LogoutRequest.ACTION);
         STUDENT_PERMISSION.add("");
     }    
