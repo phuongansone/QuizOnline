@@ -70,7 +70,7 @@ public class QuizQuestionService {
     }
     
     public QuestionDTO getNextQuestion(HttpServletRequest request) {
-        int current = Integer.parseInt(request.getParameter(CURRENT));
+        int current = StringUtil.parseInt(request.getParameter(CURRENT), 0);
         List<QuestionDTO> questions = (List<QuestionDTO>) request.getSession()
                 .getAttribute(CommonAttribute.QUESTIONS);
         

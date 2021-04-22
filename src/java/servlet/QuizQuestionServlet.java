@@ -63,7 +63,8 @@ public class QuizQuestionServlet extends HttpServlet {
         QuestionDTO currentQuestion = questions.get(current);
         request.setAttribute(QUESTION, currentQuestion);
         
-        request.getRequestDispatcher(QuizQuestionRequest.VIEW).forward(request, response);
+        request.getRequestDispatcher(QuizQuestionRequest.VIEW)
+                .forward(request, response);
     }
 
     /**

@@ -11,12 +11,19 @@
     <body>
         <c:set var="question" value="${requestScope.QUESTION}"/>
         <c:set var="quizQuestion" value="${sessionScope.QUIZ_QUESTIONS[param.current]}"/>
+        <c:set var="quiz" value="${sessionScope.QUIZ}"/>
         
-        <form action="quizQuestion" method="POST">
+        
+        <form action="quizQuestion" method="POST" id="quiz-question-form">
             <div class="card mt-3 mb-3 mr-3 border-0">
-                <div class="card-body">
-                    <h6 class="card-title">${question.questionContent}</h6>
+                <div class="card-body border-0">
+                    Time remained: <span id="time-remain" class="red-bold"></span>
                 </div>
+                <div class="card-body">
+                    <h6 class="card-title">${param.current == null ? 1 : param.current + 1}. ${question.questionContent}</h6>
+                </div>
+                    <input type="hidden" name="timer" 
+                           value="${param.timer == null ? (quiz.quizMeta.duration * 60) : param.timer}"/>
                 <div class="card-text mr-3">
                     <ul>
                         <c:forEach items="${question.answers}" var="answer">
@@ -51,16 +58,17 @@
         </form>
         <div class="card mt-3 mb-3 mr-3 border-0">
             <div class="d-flex justify-content-end">
-                <form action="finishQuiz" method="POST">
+                <form action="finishQuiz" method="POST" id="finish-form">
                     <input type="hidden" name="index" value="${param.current == null ? 0 : param.current}""/>
                     <input type="hidden" name="answer_id" />
-                    <button class="btn btn-secondary">Finish</button>
+                    <button class="btn btn-secondary" id="finish-btn">Finish</button>
                 </form>
             </div>
         </div>
     </body>
     <script src="resources/js/jquery-3.6.0.min.js"></script>
     <script src="resources/js/bootstrap.min.js" /></script>
+    <script src="resources/js/quiz-question.js" /></script>
     <script>
         // selector
         var ANSWER_RADIO = 'input[type="radio"][name="answer_id"]';
